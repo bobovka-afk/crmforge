@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'crypto';
+import { createHash, randomBytes, randomUUID } from 'crypto';
 import {
   ConflictException,
   ForbiddenException,
@@ -11,8 +11,10 @@ import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { JwtPayload } from '../common/interfaces';
+import { AppErrors } from '../common/errors';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
+import { CacheService } from '../cache/cache.service';
 import {
   BCRYPT_ROUNDS,
   EMAIL_VERIFICATION_TTL_HOURS,
@@ -32,6 +34,7 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly mail: MailService,
+    private readonly cache: CacheService,
   ) {}
 
   async register(input: {
@@ -45,7 +48,7 @@ export class AuthService {
     });
 
     if (existing) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException(AppErrors.EMAIL_ALREADY_REGISTERED);
     }
 
     const passwordHash = await bcrypt.hash(input.password, BCRYPT_ROUNDS);
@@ -80,19 +83,16 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user?.passwordHash) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(AppErrors.INVALID_CREDENTIALS);
     }
 
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(AppErrors.INVALID_CREDENTIALS);
     }
 
     if (!user.emailVerified) {
-      throw new ForbiddenException({
-        message: 'Email not verified',
-        code: 'EMAIL_NOT_VERIFIED',
-      });
+      throw new ForbiddenException(AppErrors.EMAIL_NOT_VERIFIED);
     }
 
     return this.issueTokens(user, res);
@@ -104,14 +104,14 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid verification token');
+      throw new UnauthorizedException(AppErrors.INVALID_VERIFICATION_TOKEN);
     }
 
     if (
       user.emailVerificationExpires &&
       user.emailVerificationExpires < new Date()
     ) {
-      throw new UnauthorizedException('Verification token expired');
+      throw new UnauthorizedException(AppErrors.VERIFICATION_TOKEN_EXPIRED);
     }
 
     await this.prisma.user.update({
@@ -153,7 +153,7 @@ export class AuthService {
 
   async refresh(refreshToken: string | undefined, res: Response): Promise<AuthResponse> {
     if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token missing');
+      throw new UnauthorizedException(AppErrors.REFRESH_TOKEN_MISSING);
     }
 
     const tokenHash = this.hashToken(refreshToken);
@@ -163,7 +163,7 @@ export class AuthService {
     });
 
     if (!stored || stored.expiresAt < new Date()) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException(AppErrors.INVALID_REFRESH_TOKEN);
     }
 
     await this.prisma.refreshToken.delete({ where: { id: stored.id } });
@@ -171,7 +171,15 @@ export class AuthService {
     return this.issueTokens(stored.user, res);
   }
 
-  async logout(refreshToken: string | undefined, res: Response): Promise<MessageResponse> {
+  async logout(
+    refreshToken: string | undefined,
+    res: Response,
+    accessToken?: string,
+  ): Promise<MessageResponse> {
+    if (accessToken) {
+      await this.blacklistAccessToken(accessToken);
+    }
+
     if (refreshToken) {
       const tokenHash = this.hashToken(refreshToken);
       await this.prisma.refreshToken.deleteMany({ where: { tokenHash } });
@@ -229,7 +237,8 @@ export class AuthService {
   }
 
   private async issueTokens(user: User, res: Response): Promise<AuthResponse> {
-    const payload: JwtPayload = { sub: user.id, email: user.email };
+    const jti = randomUUID();
+    const payload: JwtPayload = { sub: user.id, email: user.email, jti };
     const accessToken = await this.jwt.signAsync(payload);
 
     const refreshToken = randomBytes(48).toString('hex');
@@ -268,6 +277,38 @@ export class AuthService {
 
   private hashToken(token: string): string {
     return createHash('sha256').update(token).digest('hex');
+  }
+
+  private async blacklistAccessToken(accessToken: string): Promise<void> {
+    try {
+      const payload = await this.jwt.verifyAsync<JwtPayload>(accessToken);
+      if (payload.jti) {
+        await this.cache.blacklistAccessToken(
+          payload.jti,
+          this.parseDurationMs(this.config.get<string>('JWT_ACCESS_EXPIRES', '15m')),
+        );
+      }
+    } catch {
+      // ignore invalid access token on logout
+    }
+  }
+
+  private parseDurationMs(value: string): number {
+    const match = /^(\d+)([smhd])$/.exec(value);
+    if (!match) {
+      return 15 * 60 * 1000;
+    }
+
+    const amount = Number(match[1]);
+    const unit = match[2];
+    const multipliers: Record<string, number> = {
+      s: 1000,
+      m: 60 * 1000,
+      h: 60 * 60 * 1000,
+      d: 24 * 60 * 60 * 1000,
+    };
+
+    return amount * multipliers[unit];
   }
 
   private parseExpiry(value: string): Date {

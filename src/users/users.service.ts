@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
 import { BCRYPT_ROUNDS } from '../auth/constants';
 import { UserResponse } from '../auth/interfaces';
+import { AppErrors } from '../common/errors';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -30,7 +31,7 @@ export class UsersService {
         where: { email: data.email },
       });
       if (existing && existing.id !== userId) {
-        throw new ConflictException('Email already in use');
+        throw new ConflictException(AppErrors.EMAIL_ALREADY_IN_USE);
       }
     }
 
@@ -57,12 +58,12 @@ export class UsersService {
     });
 
     if (!user.passwordHash) {
-      throw new ForbiddenException('Password change not available for OAuth accounts');
+      throw new ForbiddenException(AppErrors.PASSWORD_CHANGE_NOT_AVAILABLE);
     }
 
     const valid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!valid) {
-      throw new UnauthorizedException('Current password is incorrect');
+      throw new UnauthorizedException(AppErrors.CURRENT_PASSWORD_INCORRECT);
     }
 
     const passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);

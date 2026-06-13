@@ -4,12 +4,15 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(Logger));
 
+  const logger = app.get(Logger);
   const config = app.get(ConfigService);
   const port = config.get<number>('PORT', 3000);
   const apiPrefix = config.get<string>('API_PREFIX', 'api');
@@ -38,8 +41,8 @@ async function bootstrap() {
 
   await app.listen(port);
 
-  console.log(`API:     http://localhost:${port}/${apiPrefix}`);
-  console.log(`Swagger: http://localhost:${port}/${apiPrefix}/docs`);
+  logger.log(`API:     http://localhost:${port}/${apiPrefix}`);
+  logger.log(`Swagger: http://localhost:${port}/${apiPrefix}/docs`);
 }
 
 bootstrap();

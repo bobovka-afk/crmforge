@@ -5,6 +5,7 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { ObjectSchema } from 'joi';
+import { AppErrors } from '../errors';
 
 @Injectable()
 export class JoiValidationPipe implements PipeTransform {
@@ -18,7 +19,7 @@ export class JoiValidationPipe implements PipeTransform {
 
     if (error) {
       throw new BadRequestException({
-        message: 'Validation failed',
+        ...AppErrors.VALIDATION_FAILED,
         errors: error.details.map((detail) => ({
           field: detail.path.join('.'),
           message: detail.message,

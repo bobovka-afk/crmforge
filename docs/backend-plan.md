@@ -14,12 +14,12 @@
 | **1** | ✅ | `feat(backend): phase 1 — prisma schema, common, health` | schema, migrate, PrismaService, Joi pipe, health/ready |
 | **2** | ✅ | `feat(backend): phase 2 — auth jwt google email` | auth, mail/SendGrid, bcrypt, refresh cookie |
 | **3** | ✅ | `feat(backend): phase 3 — users module` | profile, change password |
-| **2b** | ⬜ | `feat(backend): phase 2b — pino loki logging` | nestjs-pino, optional pino-loki |
-| **4** | ⬜ | `feat(backend): phase 4 — redis cache` | cache-manager, ioredis |
-| **5** | ⬜ | `feat(backend): phase 5 — amocrm integrations` | mock client, OAuth, encryption |
-| **6** | ⬜ | `feat(backend): phase 6 — deals crud` | list, filters, pagination |
-| **7** | ⬜ | `feat(backend): phase 7 — sync bullmq` | BullMQ jobs, sync status |
-| **8** | ⬜ | `feat(backend): phase 8 — e2e tests and polish` | e2e, swagger tags, README |
+| **2b** | ✅ | `feat(backend): phase 2b — pino loki logging` | nestjs-pino, optional pino-loki |
+| **4** | ✅ | `feat(backend): phase 4 — redis cache` | cache-manager, ioredis |
+| **5** | ✅ | `feat(backend): phase 5 — amocrm integrations` | mock client, OAuth, encryption |
+| **6** | ✅ | `feat(backend): phase 6 — deals crud` | list, filters, pagination |
+| **7** | ✅ | `feat(backend): phase 7 — sync bullmq` | BullMQ jobs, sync status |
+| **8** | ✅ | `feat(backend): phase 8 — e2e tests and polish` | e2e, swagger tags, README |
 | **T** | ⬜ | `feat(scrap-ui): minimal test forms` | см. [scrap-ui-plan.md](./scrap-ui-plan.md) |
 
 **Тестирование без дизайна:** фаза **T** (scrap-ui), не Swagger alone.  
@@ -636,13 +636,13 @@ src/sync/
 [x] Фаза 0: Config, Prisma init, main.ts bootstrap, Swagger
 [x] Фаза 1: Schema migrate, PrismaService, Joi pipe, health/ready
 [x] Фаза 2: Auth (JWT + Google OAuth + SendGrid verification)
-[ ] Фаза 2b: Pino + optional Loki transport
+[x] Фаза 2b: Pino + optional Loki transport
 [x] Фаза 3: Users module
-[ ] Фаза 4: Redis cache module
-[ ] Фаза 5: Integrations + amoCRM mock
-[ ] Фаза 6: Deals CRUD
-[ ] Фаза 7: Sync + BullMQ
-[ ] Фаза 8: E2E, Swagger polish, README
+[x] Фаза 4: Redis cache module
+[x] Фаза 5: Integrations + amoCRM mock
+[x] Фаза 6: Deals CRUD
+[x] Фаза 7: Sync + BullMQ
+[x] Фаза 8: E2E, Swagger polish, README
 [ ] Фаза T: Scrap UI — формы без стилей (scrap-ui-plan.md)
 [ ] Frontend F0–F8: Красивый UI (frontend-plan.md)
 ```

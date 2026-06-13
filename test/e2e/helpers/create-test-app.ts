@@ -1,12 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as cookieParser from 'cookie-parser';
-import * as request from 'supertest';
+import cookieParser from 'cookie-parser';
+import { AppModule } from '../../../src/app.module';
+import { HttpExceptionFilter } from '../../../src/common/filters/http-exception.filter';
 import { App } from 'supertest/types';
-import { AppModule } from '../../src/app.module';
-import { HttpExceptionFilter } from '../../src/common/filters/http-exception.filter';
 
 export async function createTestApp(): Promise<INestApplication<App>> {
+  process.env.NODE_ENV = 'test';
+  process.env.AMOCRM_MOCK = 'true';
+  process.env.LOKI_ENABLED = 'false';
   process.env.DATABASE_URL ??=
     'postgresql://crmforge:crmforge@localhost:5432/crmforge';
 

@@ -113,7 +113,11 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout' })
   logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const refreshToken = req.cookies?.[REFRESH_TOKEN_COOKIE] as string | undefined;
-    return this.authService.logout(refreshToken, res);
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader?.startsWith('Bearer ')
+      ? authHeader.slice(7)
+      : undefined;
+    return this.authService.logout(refreshToken, res, accessToken);
   }
 
   @Get('me')

@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
 import { AuthService } from '../../../src/auth/auth.service';
+import { CacheService } from '../../../src/cache/cache.service';
 import { MailService } from '../../../src/mail/mail.service';
 import { PrismaService } from '../../../src/prisma/prisma.service';
 
@@ -68,6 +69,13 @@ describe('AuthService', () => {
         {
           provide: MailService,
           useValue: { sendVerificationEmail: jest.fn() },
+        },
+        {
+          provide: CacheService,
+          useValue: {
+            blacklistAccessToken: jest.fn(),
+            isAccessTokenBlacklisted: jest.fn(),
+          },
         },
       ],
     }).compile();

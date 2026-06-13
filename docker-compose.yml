@@ -57,6 +57,7 @@ services:
       APP_URL: http://localhost:5173
       MAIL_MOCK: 'true'
       AMOCRM_MOCK: 'true'
+      LOKI_URL: http://loki:3100
       LOKI_ENABLED: 'false'
     depends_on:
       postgres:

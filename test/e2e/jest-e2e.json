@@ -4,7 +4,19 @@
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.(t|j)s$": [
+      "ts-jest",
+      {
+        "tsconfig": {
+          "esModuleInterop": true,
+          "allowSyntheticDefaultImports": true,
+          "experimentalDecorators": true,
+          "emitDecoratorMetadata": true,
+          "target": "ES2023",
+          "module": "commonjs"
+        }
+      }
+    ]
   },
   "moduleNameMapper": {
     "^@/(.*)$": "<rootDir>/../src/$1"

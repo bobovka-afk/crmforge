@@ -21,13 +21,17 @@
 | Auth (JWT, Google*, email verify) | ✅ фаза 2 |
 | Mail (SendGrid + MAIL_MOCK) | ✅ |
 | Users module | ✅ фаза 3 |
-| BullMQ | ⬜ фаза 7 |
+| Pino logging (+ Loki transport) | ✅ фаза 2b |
+| Redis cache + JWT blacklist | ✅ фаза 4 |
+| Integrations (amoCRM mock/OAuth) | ✅ фаза 5 |
+| Deals CRUD | ✅ фаза 6 |
+| Sync (BullMQ) | ✅ фаза 7 |
+| E2E + README polish | ✅ фаза 8 |
 | React frontend | ⬜ Не начато |
-| Docker Compose | ⬜ Не начато |
-| SendGrid / Mail | ⬜ Не начато |
-| Grafana + Loki | ⬜ Не начато |
+| Docker Compose | ✅ postgres, redis, api, loki, grafana |
+| Grafana + Loki | ✅ datasource; `LOKI_ENABLED=true` для shipping |
 
-**Текущая фаза:** backend **фаза 4** (Redis cache) — пауза по запросу пользователя.
+**Текущая фаза:** backend **0–8 завершены** → следующая **фаза T** (scrap-ui).
 
 ## Зафиксированный стек
 

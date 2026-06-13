@@ -10,7 +10,8 @@ crmforge/
 ├── docs/
 │   └── START-HERE.md  ← документация, планы, стек
 ├── src/               ← NestJS backend
-├── prisma/            ← схема БД (появится на фазе 0)
+├── prisma/            ← схема БД и миграции
+├── test/              ← unit + e2e тесты
 └── apps/web/          ← React frontend (позже)
 ```
 
@@ -27,29 +28,34 @@ crmforge/
 
 Подробнее: [docs/tech-stack.md](./docs/tech-stack.md)
 
-## Быстрый старт (всё в Docker)
+## Быстрый старт (Docker)
 
 ```bash
 cp .env.example .env   # JWT секреты — свои
-npm run docker:up      # postgres + redis + api + web + loki + grafana
+npm run docker:up      # postgres + redis + api + loki + grafana
 ```
-
-Открыть: **http://localhost:5173** — тестовая страница (register / login / logout)
 
 | URL | Сервис |
 |-----|--------|
-| http://localhost:5173 | Test UI (scrap) |
-| http://localhost:3002/api/docs | Swagger |
-| http://localhost:3001 | Grafana |
+| http://localhost:3000/api/docs | Swagger API |
+| http://localhost:3001 | Grafana (admin / admin) |
+| http://localhost:3100 | Loki |
 
-Документация: [docs/local-development.md](./docs/local-development.md)
+Подробнее: [docs/local-development.md](./docs/local-development.md) · переменные: [docs/env.md](./docs/env.md)
+
+## Локальная разработка (без Docker для API)
+
+```bash
+npm run docker:infra   # только postgres + redis
+npx prisma migrate dev
+npm run start:dev
+```
 
 ## Статус
 
-- [x] NestJS scaffold
-- [x] Документация и планы (`docs/`)
-- [ ] Backend фазы 0–8 → см. [backend-plan.md](./docs/backend-plan.md)
-- [ ] Frontend → см. [frontend-plan.md](./docs/frontend-plan.md)
+- [x] Backend фазы 0–8 (auth, users, integrations, deals, sync)
+- [ ] Фаза T: scrap-ui — [scrap-ui-plan.md](./docs/scrap-ui-plan.md)
+- [ ] Frontend F0–F8 — [frontend-plan.md](./docs/frontend-plan.md)
 
 ## Скрипты
 
@@ -58,5 +64,11 @@ npm run docker:up      # postgres + redis + api + web + loki + grafana
 | `npm run start:dev` | Backend в watch mode |
 | `npm run build` | Production build |
 | `npm run test` | Unit tests |
-| `npm run test:e2e` | E2E tests |
+| `npm run test:e2e` | E2E tests (нужны postgres + redis) |
+| `npm run docker:up` | Полный стек в Docker |
 | `npm run lint` | ESLint |
+
+## API
+
+- Swagger: `/api/docs`
+- Карта маршрутов: [docs/route-map.md](./docs/route-map.md)
