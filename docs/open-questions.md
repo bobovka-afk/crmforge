@@ -29,7 +29,7 @@
 | 21 | Docker | Compose full + infra split | ✅ **Compose full**; daily dev: **postgres+redis отдельно**, apps через `npm run dev` |
 | 22 | Mail dev mode | MAIL_MOCK | ✅ **MAIL_MOCK=true** по умолчанию — письма в консоль без SendGrid |
 | 23 | i18n default locale | RU / EN | ✅ **RU**; смена на Register + Settings |
-| 24 | UI themes | light / dark | ✅ **Две темы**; палитра/дизайн — позже |
+| 24 | UI themes | light / dark | ✅ **Dark Vercel + Light Stripe** — `design-system.md` |
 | 25 | Тест UI | scrap / swagger | ✅ **Scrap UI** после backend, до красивого фронта |
 
 ## Детали по вопросам

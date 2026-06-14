@@ -143,7 +143,7 @@ node -e "console.log('REFRESH:', require('crypto').randomBytes(32).toString('hex
 |------------|-----|----------|
 | `GOOGLE_CLIENT_ID` | 🌐 ⬜ | Client ID из Google Cloud |
 | `GOOGLE_CLIENT_SECRET` | 🌐 ⬜ | Client Secret |
-| `GOOGLE_CALLBACK_URL` | 🏠 ⚠️ | `http://localhost:3000/api/auth/google/callback` |
+| `GOOGLE_CALLBACK_URL` | 🏠 ⚠️ | `http://localhost:5173/api/auth/google/callback` |
 
 **Когда нужно:** фаза 2 (auth). До этого — пустые строки.
 
@@ -160,10 +160,11 @@ node -e "console.log('REFRESH:', require('crypto').randomBytes(32).toString('hex
    - Application type: **Web application**
    - Name: `CRMForge Local`
    - **Authorized JavaScript origins:**
-     - `http://localhost:5173` (scrap-ui / vite)
-     - `http://localhost:3000` (опционально)
+     - `http://localhost:5173` ← фронт (Docker / Vite)
+     - `http://localhost:3000` (опционально, прямой доступ к API)
    - **Authorized redirect URIs:**
-     - `http://localhost:3000/api/auth/google/callback` ← **точно как в `.env`**
+     - `http://localhost:5173/api/auth/google/callback` ← **точно как в `.env` при Docker / Vite**
+     - `http://localhost:3000/api/auth/google/callback` (только если в `.env` указан порт 3000)
 5. Скопируй **Client ID** → `GOOGLE_CLIENT_ID`
 6. Скопируй **Client secret** → `GOOGLE_CLIENT_SECRET`
 

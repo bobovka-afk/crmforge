@@ -7,13 +7,8 @@ import { CacheModule } from '../cache/cache.module';
 import { MailModule } from '../mail/mail.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards';
+import { JwtAuthGuard, GoogleOAuthConfiguredGuard } from './guards';
 import { GoogleStrategy, JwtStrategy } from './strategies';
-
-const googleProviders =
-  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-    ? [GoogleStrategy]
-    : [];
 
 @Module({
   imports: [
@@ -35,7 +30,8 @@ const googleProviders =
   providers: [
     AuthService,
     JwtStrategy,
-    ...googleProviders,
+    GoogleStrategy,
+    GoogleOAuthConfiguredGuard,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
   ],
   exports: [AuthService, JwtModule],

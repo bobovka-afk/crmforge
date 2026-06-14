@@ -23,7 +23,7 @@ export const envSchema = Joi.object({
   GOOGLE_CLIENT_SECRET: Joi.string().allow('').default(''),
   GOOGLE_CALLBACK_URL: Joi.string()
     .uri()
-    .default('http://localhost:3000/api/auth/google/callback'),
+    .default('http://localhost:5173/api/auth/google/callback'),
 
   SENDGRID_API_KEY: Joi.string().allow('').default(''),
   SENDGRID_FROM_EMAIL: Joi.string()

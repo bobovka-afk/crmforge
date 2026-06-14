@@ -12,7 +12,7 @@ crmforge/
 ├── src/               ← NestJS backend
 ├── prisma/            ← схема БД и миграции
 ├── test/              ← unit + e2e тесты
-└── apps/web/          ← React frontend (позже)
+└── apps/web/          ← React frontend (Vite + nginx in Docker)
 ```
 
 > **Документация и планы:** [docs/START-HERE.md](./docs/START-HERE.md)
@@ -32,11 +32,12 @@ crmforge/
 
 ```bash
 cp .env.example .env   # JWT секреты — свои
-npm run docker:up      # postgres + redis + api + loki + grafana
+npm run docker:up      # postgres + redis + api + web + loki + grafana
 ```
 
 | URL | Сервис |
 |-----|--------|
+| http://localhost:5173 | **Frontend** (React) |
 | http://localhost:3000/api/docs | Swagger API |
 | http://localhost:3001 | Grafana (admin / admin) |
 | http://localhost:3100 | Loki |
@@ -54,8 +55,7 @@ npm run start:dev
 ## Статус
 
 - [x] Backend фазы 0–8 (auth, users, integrations, deals, sync)
-- [ ] Фаза T: scrap-ui — [scrap-ui-plan.md](./docs/scrap-ui-plan.md)
-- [ ] Frontend F0–F8 — [frontend-plan.md](./docs/frontend-plan.md)
+- [x] Frontend F0–F8 — [frontend-plan.md](./docs/frontend-plan.md)
 
 ## Скрипты
 

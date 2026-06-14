@@ -1,7 +1,6 @@
 import { createHash, randomBytes, randomUUID } from 'crypto';
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -36,6 +35,12 @@ export class AuthService {
     private readonly mail: MailService,
     private readonly cache: CacheService,
   ) {}
+
+  isGoogleOAuthConfigured(): boolean {
+    const clientId = this.config.get<string>('GOOGLE_CLIENT_ID');
+    const clientSecret = this.config.get<string>('GOOGLE_CLIENT_SECRET');
+    return Boolean(clientId?.trim() && clientSecret?.trim());
+  }
 
   async register(input: {
     email: string;
@@ -72,7 +77,7 @@ export class AuthService {
 
     await this.mail.sendVerificationEmail(input.email, verificationToken);
 
-    return { message: 'Registration successful. Please check your email.' };
+    return { message: 'Registration successful. You can verify your email later.' };
   }
 
   async login(
@@ -89,10 +94,6 @@ export class AuthService {
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) {
       throw new UnauthorizedException(AppErrors.INVALID_CREDENTIALS);
-    }
-
-    if (!user.emailVerified) {
-      throw new ForbiddenException(AppErrors.EMAIL_NOT_VERIFIED);
     }
 
     return this.issueTokens(user, res);

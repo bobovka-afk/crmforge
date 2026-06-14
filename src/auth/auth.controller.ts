@@ -16,6 +16,7 @@ import { CurrentUser, JoiValidationPipe, Public } from '../common';
 import { JwtPayload } from '../common/interfaces';
 import { REFRESH_TOKEN_COOKIE } from './constants';
 import { AuthService } from './auth.service';
+import { GoogleOAuthConfiguredGuard } from './guards';
 import {
   loginSchema,
   registerSchema,
@@ -75,9 +76,16 @@ export class AuthController {
   }
 
   @Public()
+  @Get('config')
+  @ApiOperation({ summary: 'Public auth configuration' })
+  getConfig() {
+    return { googleOAuth: this.authService.isGoogleOAuthConfigured() };
+  }
+
+  @Public()
   @Get('google')
   @ApiOperation({ summary: 'Redirect to Google OAuth' })
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleOAuthConfiguredGuard, AuthGuard('google'))
   googleAuth(): void {
     // Passport redirects
   }
@@ -85,7 +93,7 @@ export class AuthController {
   @Public()
   @Get('google/callback')
   @ApiOperation({ summary: 'Google OAuth callback' })
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleOAuthConfiguredGuard, AuthGuard('google'))
   async googleCallback(
     @Req() req: Request & { user: { googleId: string; email: string; name?: string } },
     @Res() res: Response,

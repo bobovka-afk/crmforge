@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRMForge — Design Preview (Vercel + Stripe)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font: 'Inter', system-ui, sans-serif;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --sidebar-w: 240px;
+      --picker-h: 52px;
+      --transition: 0.25s ease;
+    }
+
+    /* Light — Stripe (L3) — default */
+    :root, [data-theme="light"] {
+      --bg: #f6f9fc;
+      --bg-sidebar: #fff;
+      --bg-card: #fff;
+      --bg-hover: #f0f4f8;
+      --border: #e3e8ee;
+      --text: #0a2540;
+      --text-muted: #697386;
+      --primary: #635bff;
+      --primary-hover: #7a73ff;
+      --primary-text: #fff;
+      --accent-bg: rgba(99,91,255,0.08);
+      --success: #30b566;
+      --warning: #df1b41;
+      --danger: #df1b41;
+      --shadow: 0 1px 3px rgba(50,50,93,0.08), 0 1px 0 rgba(0,0,0,0.02);
+    }
+
+    /* Dark — Vercel */
+    [data-theme="dark"] {
+      --bg: #000;
+      --bg-sidebar: #0a0a0a;
+      --bg-card: #0a0a0a;
+      --bg-hover: #171717;
+      --border: #333;
+      --text: #ededed;
+      --text-muted: #888;
+      --primary: #fff;
+      --primary-hover: #e5e5e5;
+      --primary-text: #000;
+      --accent-bg: rgba(255,255,255,0.06);
+      --success: #50e3c2;
+      --warning: #f5a623;
+      --danger: #e00;
+      --shadow: none;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      transition: background var(--transition), color var(--transition);
+      min-height: 100vh;
+    }
+
+    .picker {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      height: var(--picker-h);
+      background: #111;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px;
+    }
+    .picker-label {
+      color: #888;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .picker-fixed {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #aaa;
+      font-size: 12px;
+    }
+    .picker-fixed strong { color: #fff; }
+    .picker-check { color: #50e3c2; font-weight: 700; }
+    .nav-btn {
+      padding: 7px 14px; border-radius: 999px; border: none;
+      background: #fff; color: #111; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font); text-decoration: none;
+      display: inline-flex; align-items: center;
+    }
+    .nav-btn:hover { background: #e5e5e5; }
+
+    .app {
+      display: flex;
+      padding-top: var(--picker-h);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: var(--picker-h);
+      height: calc(100vh - var(--picker-h));
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px 20px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+    .logo-icon {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      background: var(--primary);
+      color: var(--primary-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .nav { list-style: none; flex: 1; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 2px;
+    }
+    .nav-item:hover { background: var(--bg-hover); color: var(--text); }
+    .nav-item.active { background: var(--accent-bg); color: var(--primary); }
+    .nav-icon { width: 18px; text-align: center; opacity: 0.7; font-size: 14px; }
+
+    .sidebar-footer {
+      padding: 12px 8px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .main { flex: 1; min-width: 0; padding: 28px 32px; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .header-left h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
+    .header-left p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .btn:hover { background: var(--bg-hover); }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--primary-text);
+      border-color: var(--primary);
+    }
+    .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1100px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .stats { grid-template-columns: 1fr; } .main { padding: 20px 16px; } .sidebar { display: none; } }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin: 8px 0 4px; }
+    .stat-change { font-size: 12px; font-weight: 500; }
+    .stat-change.up { color: var(--success); }
+    .stat-change.neutral { color: var(--text-muted); }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+    }
+    @media (max-width: 960px) { .content-grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-title { font-size: 14px; font-weight: 600; }
+    .card-link { font-size: 12px; color: var(--primary); cursor: pointer; font-weight: 500; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      padding: 10px 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 14px 20px; font-size: 13px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg-hover); }
+    .deal-title { font-weight: 500; }
+    .deal-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-won { background: rgba(48,181,102,0.12); color: var(--success); }
+    .badge-open { background: var(--accent-bg); color: var(--primary); }
+    .badge-lost { background: rgba(223,27,65,0.1); color: var(--danger); }
+    [data-theme="dark"] .badge-won { background: rgba(80,227,194,0.15); }
+    [data-theme="dark"] .badge-lost { background: rgba(238,0,0,0.12); color: #e00; }
+
+    .integration-panel { padding: 20px; }
+    .integration-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      background: var(--bg-hover);
+    }
+    .integration-logo {
+      width: 40px; height: 40px;
+      border-radius: var(--radius);
+      background: #3390ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .integration-name { font-size: 13px; font-weight: 600; }
+    .integration-status { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .status-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      margin-right: 4px;
+    }
+    .sync-block {
+      padding: 16px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+    .sync-block p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--accent-bg);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+  <div class="picker">
+    <span class="picker-label">Зафиксировано</span>
+    <div class="picker-fixed">
+      <span class="picker-check">✓</span>
+      Dark: <strong>Vercel</strong>
+    </div>
+    <div class="picker-fixed">
+      <span class="picker-check">✓</span>
+      Light: <strong>Stripe (L3)</strong>
+    </div>
+    <span class="picker-label" style="margin-left:auto">№0 · Theme</span>
+    <button class="btn" id="theme-toggle" style="background:#222;border-color:#444;color:#fff;font-size:12px;padding:6px 14px">
+      🌙 Dark
+    </button>
+    <a class="nav-btn" href="a-l01-app-shell.html">Далее →</a>
+  </div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">CF</div>
+        CRMForge
+      </div>
+      <ul class="nav">
+        <li class="nav-item active"><span class="nav-icon">▦</span> Dashboard</li>
+        <li class="nav-item"><span class="nav-icon">◎</span> Сделки</li>
+        <li class="nav-item"><span class="nav-icon">⇄</span> Интеграции</li>
+        <li class="nav-item"><span class="nav-icon">↻</span> Синхронизация</li>
+        <li class="nav-item"><span class="nav-icon">⚙</span> Настройки</li>
+      </ul>
+      <div class="sidebar-footer">design-system.md</div>
+    </aside>
+
+    <main class="main">
+      <header class="header">
+        <div class="header-left">
+          <h1>Dashboard</h1>
+          <p>Обзор сделок и статус интеграции amoCRM</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="theme-toggle-2">🌙 Dark</button>
+          <button class="btn">RU / EN</button>
+          <div class="avatar">IK</div>
+        </div>
+      </header>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Всего сделок</div>
+          <div class="stat-value">248</div>
+          <div class="stat-change up">↑ 12% за месяц</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Выиграно</div>
+          <div class="stat-value">64</div>
+          <div class="stat-change up">↑ 8 новых</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">В работе</div>
+          <div class="stat-value">142</div>
+          <div class="stat-change neutral">без изменений</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Сумма pipeline</div>
+          <div class="stat-value">₽4.2M</div>
+          <div class="stat-change up">↑ ₽320K</div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Последние сделки</span>
+            <span class="card-link">Все сделки →</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Сделка</th>
+                <th>Сумма</th>
+                <th>Статус</th>
+                <th>Контакт</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="deal-title">Внедрение CRM — ООО Альфа</div><div class="deal-sub">Синхр. 2 мин назад</div></td>
+                <td>₽450 000</td>
+                <td><span class="badge badge-open">В работе</span></td>
+                <td>Иван Петров</td>
+              </tr>
+              <tr>
+                <td><div class="deal-title">Лицензия Enterprise</div><div class="deal-sub">Синхр. 15 мин назад</div></td>
+                <td>₽1 200 000</td>
+                <td><span class="badge badge-won">Выиграна</span></td>
+                <td>Мария Сидорова</td>
+              </tr>
+              <tr>
+                <td><div class="deal-title">Консультация — стартап Beta</div><div class="deal-sub">Синхр. 1 ч назад</div></td>
+                <td>₽85 000</td>
+                <td><span class="badge badge-lost">Проиграна</span></td>
+                <td>Алексей К.</td>
+              </tr>
+              <tr>
+                <td><div class="deal-title">Поддержка Q2</div><div class="deal-sub">Синхр. 3 ч назад</div></td>
+                <td>₽210 000</td>
+                <td><span class="badge badge-open">В работе</span></td>
+                <td>Елена Волкова</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">Интеграции</span></div>
+          <div class="integration-panel">
+            <div class="integration-item">
+              <div class="integration-logo">a</div>
+              <div>
+                <div class="integration-name">amoCRM</div>
+                <div class="integration-status"><span class="status-dot"></span>Подключено · demo mode</div>
+              </div>
+            </div>
+            <div class="sync-block">
+              <p>Последняя синхронизация: сегодня, 14:32</p>
+              <button class="btn btn-primary" style="width:100%;justify-content:center">↻ Синхронизировать</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let theme = localStorage.getItem('crmforge-theme') || 'light';
+
+    function applyTheme(t) {
+      theme = t;
+      document.body.setAttribute('data-theme', t);
+      document.documentElement.setAttribute('data-theme', t);
+      const label = t === 'dark' ? '🌙 Dark' : '☀️ Light';
+      document.getElementById('theme-toggle').textContent = label;
+      document.getElementById('theme-toggle-2').textContent = label;
+      localStorage.setItem('crmforge-theme', t);
+    }
+
+    function toggle() {
+      applyTheme(theme === 'dark' ? 'light' : 'dark');
+    }
+
+    document.getElementById('theme-toggle').addEventListener('click', toggle);
+    document.getElementById('theme-toggle-2').addEventListener('click', toggle);
+    applyTheme(theme);
+  </script>
+</body>
+</html>

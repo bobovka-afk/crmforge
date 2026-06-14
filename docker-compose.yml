@@ -1,9 +1,10 @@
 # CRMForge — full stack (one command)
 #
 #   docker compose up -d --build
-#   open http://localhost:3000/api/docs
+#   open http://localhost:5173          ← frontend
+#   open http://localhost:3000/api/docs ← Swagger
 #
-# Logs (verify token): docker compose logs -f api
+# Logs: docker compose logs -f api
 # Stop: docker compose down
 
 services:
@@ -63,6 +64,24 @@ services:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/api/health']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: crmforge-web
+    restart: unless-stopped
+    ports:
+      - '5173:80'
+    depends_on:
+      api:
         condition: service_healthy
 
   loki:

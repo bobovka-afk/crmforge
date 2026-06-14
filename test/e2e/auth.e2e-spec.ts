@@ -19,7 +19,7 @@ describe('Auth (e2e)', () => {
     await app.close();
   });
 
-  it('register → verify → login flow', async () => {
+  it('register → login without verify → verify later', async () => {
     await request(app.getHttpServer())
       .post('/api/auth/register')
       .send({ email, password: 'password123', name: 'Test', locale: 'ru' })
@@ -29,17 +29,24 @@ describe('Auth (e2e)', () => {
     expect(user?.emailVerified).toBe(false);
     expect(user?.emailVerificationToken).toBeTruthy();
 
+    const loginBeforeVerify = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({ email, password: 'password123' })
+      .expect(201);
+
+    expect(loginBeforeVerify.body.accessToken).toBeDefined();
+    expect(loginBeforeVerify.body.user.emailVerified).toBe(false);
+
     await request(app.getHttpServer())
       .get('/api/auth/verify-email')
       .query({ token: user!.emailVerificationToken })
       .expect(200);
 
-    const login = await request(app.getHttpServer())
+    const loginAfterVerify = await request(app.getHttpServer())
       .post('/api/auth/login')
       .send({ email, password: 'password123' })
       .expect(201);
 
-    expect(login.body.accessToken).toBeDefined();
-    expect(login.body.user.email).toBe(email);
+    expect(loginAfterVerify.body.user.emailVerified).toBe(true);
   });
 });

@@ -5,13 +5,21 @@ import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+  readonly enabled: boolean;
+
   constructor(config: ConfigService) {
+    const clientID = config.get<string>('GOOGLE_CLIENT_ID', '').trim();
+    const clientSecret = config.get<string>('GOOGLE_CLIENT_SECRET', '').trim();
+    const enabled = Boolean(clientID && clientSecret);
+
     super({
-      clientID: config.get<string>('GOOGLE_CLIENT_ID', ''),
-      clientSecret: config.get<string>('GOOGLE_CLIENT_SECRET', ''),
+      clientID: clientID || 'google-oauth-not-configured',
+      clientSecret: clientSecret || 'google-oauth-not-configured',
       callbackURL: config.get<string>('GOOGLE_CALLBACK_URL'),
       scope: ['email', 'profile'],
     });
+
+    this.enabled = enabled;
   }
 
   validate(

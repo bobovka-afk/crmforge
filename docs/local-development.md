@@ -19,20 +19,24 @@ npm run dev
 # или: ./scripts/dev.sh
 ```
 
-### Режим 2 — Полный стек (тестирование observability)
+### Режим 2 — Полный стек в Docker (one command)
 
-Всё в Docker, приложения всё равно локально:
+Postgres, Redis, API, **Web**, Loki, Grafana — всё в контейнерах:
 
 ```bash
-npm run docker:full
+cp .env.example .env
+npm run docker:up
 # или: ./scripts/docker-full.sh
-
-# В .env включить отправку логов в Loki:
-# LOKI_ENABLED=true
-# LOKI_URL=http://localhost:3100
-
-npm run dev
 ```
+
+| URL | Сервис |
+|-----|--------|
+| http://localhost:5173 | Frontend (nginx + React build) |
+| http://localhost:3000/api/docs | Swagger |
+
+Nginx во фронте проксирует `/api` → `api:3000`. Для hot reload используй **Режим 1**.
+
+Опционально — логи в Loki: в `.env` задать `LOKI_ENABLED=true`, пересобрать api.
 
 Открыть Grafana: http://localhost:3001 (admin / admin) → Explore → Loki.
 
@@ -43,7 +47,7 @@ npm run dev
 | Команда | Что делает |
 |---------|------------|
 | `npm run docker:infra` | Postgres + Redis |
-| `npm run docker:full` | Postgres + Redis + Loki + Grafana |
+| `npm run docker:up` | **Полный стек** (postgres, redis, api, web, loki, grafana) |
 | `npm run docker:down` | Остановить все контейнеры |
 | `npm run dev` | Nest API + Vite Web (watch mode) |
 | `npm run start:dev` | Только Nest API |

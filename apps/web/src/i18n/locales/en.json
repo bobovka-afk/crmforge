@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "deals": "Сделки",
+    "integrations": "Integrations",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": "Sign in",
+    "register": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "google": "Continue with Google",
+    "or": "or",
+    "noAccount": "No account?",
+    "hasAccount": "Already have an account?",
+    "checkEmailTitle": "Check your email",
+    "checkEmailDesc": "We sent a verification link to",
+    "resend": "Resend email",
+    "resendSuccess": "Verification email sent",
+    "verificationEmailSent": "Account created. We sent a verification email — you can confirm later.",
+    "verifyLaterBanner": "Email not verified. You can keep using the app and confirm later in",
+    "verifyLaterLink": "profile settings",
+    "verifyTitle": "Verifying email",
+    "verifyDesc": "Checking token from the link…",
+    "verifySuccess": "Email verified"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Deals overview and amoCRM status",
+    "sync": "Sync",
+    "recentDeals": "Recent deals",
+    "allDeals": "All deals",
+    "integrations": "Integrations",
+    "emptyIntegration": "Integration not connected",
+    "emptyIntegrationDesc": "Connect amoCRM to import deals",
+    "connect": "Connect amoCRM",
+    "statsTotal": "Total deals",
+    "statsWon": "Won",
+    "statsOpen": "Open",
+    "statsPipeline": "Pipeline"
+  },
+  "deals": {
+    "title": "Deals",
+    "subtitle": "deals · synced from amoCRM",
+    "search": "Search deals…",
+    "status": "Status",
+    "allStatuses": "All statuses",
+    "contact": "Contact",
+    "amount": "Amount",
+    "syncedAt": "Synced",
+    "emptyTitle": "No deals yet",
+    "emptyDesc": "Connect amoCRM and sync leads — they will appear here",
+    "back": "All deals"
+  },
+  "integrations": {
+    "title": "Integrations",
+    "subtitle": "Connect a CRM to sync deals",
+    "configure": "Configure",
+    "soon": "Soon",
+    "connected": "Connected"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Profile, security and language",
+    "profile": "Profile",
+    "security": "Security",
+    "language": "Language",
+    "danger": "Danger zone",
+    "save": "Save",
+    "updatePassword": "Update password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "disconnectAmo": "Disconnect amoCRM",
+    "dangerDesc": "Disconnecting removes integration tokens. Deals in CRMForge remain.",
+    "emailVerification": "Email verification",
+    "emailVerified": "Your email is verified.",
+    "emailNotVerified": "Your email is not verified. Click below to send a verification link."
+  },
+  "profileMenu": {
+    "account": "Account",
+    "profile": "Profile",
+    "security": "Security",
+    "logout": "Log out"
+  },
+  "sync": {
+    "title": "Syncing amoCRM",
+    "hint": "You can keep working — sync runs in background",
+    "done": "Sync complete",
+    "doneDesc": "New deals imported from amoCRM",
+    "viewDeals": "Open deals"
+  },
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "notFound": {
+    "title": "Oops!",
+    "desc": "This page does not exist in CRMForge",
+    "home": "Go to dashboard"
+  }
+}

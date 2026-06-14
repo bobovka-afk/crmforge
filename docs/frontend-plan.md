@@ -1,7 +1,74 @@
 # CRMForge — Frontend Plan
 
 > **Старт:** только после завершения backend (фазы 0–8 в `backend-plan.md`).  
-> **Цель:** современный production-look UI для portfolio — чистый, быстрый, без лишнего.
+> **Цель:** современный production-look UI для portfolio — чистый, быстрый, без лишнего.  
+> **Вёрстка по экранам:** [`ui-layout-queue.md`](ui-layout-queue.md) — очередь mock'ов с вариантами layout.
+
+---
+
+## Чеклист прогресса
+
+### UI layout (presets A–Q) — ✅ все выбраны
+
+Mock'и: [`presets/`](presets/) · детали: [`ui-layout-queue.md`](ui-layout-queue.md)
+
+```
+[x]  0 — T00  Global theme           Dark Vercel + Light Stripe L3
+[x]  1 — L01  App Shell               v5  BC · orb profile · prefs BL
+[x]  2 — L02  404                     v2  Hero 404
+[x]  3 — A01  Login                   v2  Split · email first (Google снизу)
+[x]  4 — A02  Register                v2  Split promo + Google
+[x]  5 — A03  Check Email             v1  Card + steps
+[x]  6 — A04  Verify Email            v1  Loading card
+[x]  7 — D01  Dashboard               v1  Classic grid
+[x]  8 — DL01 Deals List              v2  Filters sidebar
+[x]  9 — DL02 Deal Detail             v3  Tabs + hero
+[x] 10 — I01  Integrations Hub        v2  List rows
+[x] 11 — I02  amoCRM Setup            v5  Center connect
+[x] 12 — S01  Settings                v3  Sidebar nav (Профиль / Безопасность / Язык / Danger)
+[x] 13 — U01  Sync Progress           v7  Floating panel
+[x] 14 — U02  User Menu               v3  Grouped menu (orb top-right)
+[x] 15 — U03  Toasts                  v5  Rich toast
+[x] 16 — U04  Status Badges            v5  Soft fill
+[x] 17 — U05  Empty States             v1  Center illustration
+```
+
+**Профиль (модель A):** отдельного `/profile` нет · редактирование на `/settings` · orb-menu → «Профиль» / «Безопасность» · RU/EN + тема — sidebar bottom-left.
+
+### Реализация frontend (F0–F8)
+
+```
+[x] F0: Vite + Tailwind + shadcn + design-tokens.css
+[x] F1: Router + AppShell (v5) + breadcrumbs + profile orb + sidebar prefs
+[x] F2: Auth (v2/v2/v1/v1) + API client + guards
+[x] F3: Dashboard (v1 classic grid)
+[x] F4: Deals list (v2) + detail (v3)
+[x] F5: Integrations (v2) + amoCRM setup (v5)
+[x] F6: Sync (v7 floating panel) + rich toasts (v5)
+[x] F7: Settings (v3 sidebar nav)
+[~] F8: 404 (v2) + empty states (v1) + badges (v5) — deploy pending
+```
+
+### Тема и i18n
+
+```
+[x] Палитра: Dark Vercel + Light Stripe L3 — design-system.md
+[x] design-tokens.css → apps/web/src/index.css
+[x] next-themes Provider (class on <html>)
+[x] RU/EN toggle — sidebar bottom-left (sync с i18n + user profile)
+[x] Theme toggle — sidebar bottom-left
+[ ] Все страницы читаемы в обеих темах (visual QA)
+```
+
+### Handoff backend → frontend
+
+```
+[ ] Swagger доступен и актуален
+[ ] CORS разрешает http://localhost:5173
+[ ] .env.example содержит все переменные
+[ ] Mock mode работает без реального amoCRM
+[ ] route-map.md совпадает с реальными endpoints
+```
 
 ---
 
@@ -13,21 +80,7 @@
 4. Integrations — подключение **amoCRM** (OAuth), статус, test connection
 5. Sync — кнопка синхронизации + статус job
 6. Responsive layout
-7. **Light / Dark theme** — переключатель (дизайн и цвета позже, см. чеклист ниже)
-
----
-
-## Чеклист — темы (без дизайна пока)
-
-```
-[ ] next-themes Provider (class on <html>)
-[ ] ThemeToggle в Header (sun/moon icon)
-[ ] Сохранение выбора в localStorage
-[ ] CSS variables shadcn (default light + dark) — без кастомных цветов
-[ ] Все страницы читаемы в обеих темах
-```
-
-> **Позже (не сейчас):** кастомная палитра, brand colors, градиенты.
+7. **Light / Dark theme** — переключатель в sidebar bottom-left (`design-system.md`)
 
 ---
 
@@ -103,10 +156,10 @@ apps/web/
 │   ├── components/
 │   │   ├── ui/                # shadcn primitives
 │   │   └── layout/
-│   │       ├── AppShell.tsx
-│   │       ├── Sidebar.tsx
-│   │       ├── Header.tsx
-│   │       └── ThemeToggle.tsx
+│   │       ├── AppShell.tsx       # layout v5: sidebar + prefs BL + profile orb TR
+│   │       ├── Sidebar.tsx        # nav + RU/EN + theme (bottom-left)
+│   │       ├── ProfileMenu.tsx    # orb + grouped dropdown (N3)
+│   │       └── Breadcrumbs.tsx
 │   ├── pages/
 │   │   ├── LoginPage.tsx
 │   │   ├── RegisterPage.tsx
@@ -158,21 +211,31 @@ apps/web/
 
 ## Дизайн-система
 
+> **Зафиксировано:** Dark — **Vercel**, Light — **Stripe (L3)**.  
+> Полная спека: [`design-system.md`](design-system.md) · CSS: [`design-tokens.css`](design-tokens.css) · Presets: [`presets/`](presets/)
+
 ### Визуальный язык
 
-- **Стиль:** clean SaaS dashboard (референсы: Linear, Vercel Dashboard, Resend)
+- **Стиль:** clean SaaS dashboard
+- **Dark:** Vercel — чёрно-белый, белые primary-кнопки
+- **Light:** Stripe — `#f6f9fc` фон, indigo `#635bff` accent
 - **Шрифт:** Inter (Google Fonts)
 - **Radius:** `0.5rem` (shadcn default)
 - **Spacing:** generous whitespace, card-based layout
 
-### Цвета (CSS variables, shadcn default с кастомизацией)
+### Цвета (краткая таблица)
 
-| Token | Light | Dark |
-|-------|-------|------|
-| Primary | Indigo/Violet accent | Same, adjusted luminance |
-| Background | White / slate-50 | slate-950 |
-| Card | White with subtle border | slate-900 |
-| Muted text | slate-500 | slate-400 |
+| Token | Light (Stripe) | Dark (Vercel) |
+|-------|----------------|---------------|
+| Background | `#f6f9fc` | `#000000` |
+| Card | `#ffffff` | `#0a0a0a` |
+| Primary | `#635bff` | `#ffffff` |
+| Primary text | `#ffffff` | `#000000` |
+| Text | `#0a2540` | `#ededed` |
+| Muted | `#697386` | `#888888` |
+| Border | `#e3e8ee` | `#333333` |
+| Success | `#30b566` | `#50e3c2` |
+| Danger | `#df1b41` | `#ee0000` |
 
 ### Компоненты shadcn (минимальный набор)
 
@@ -256,15 +319,18 @@ server: {
 | `/integrations` | IntegrationsPage | Protected |
 | `/integrations/amocrm` | AmoCrmSetupPage | Protected |
 | `/settings` | SettingsPage | Protected |
+| `/settings/:section?` | SettingsPage | Protected — `profile` · `security` · `language` · `danger` |
 
-### AppShell
+### AppShell (v5 — зафиксировано)
 
-- Collapsible sidebar (desktop)
-- Sheet menu (mobile)
-- Header: user menu, theme toggle, **language switcher (RU/EN)**, sync indicator
+- Sidebar: Dashboard · Сделки · Интеграции · **Настройки**
+- **Bottom-left sidebar:** RU/EN toggle + theme (🌙/☀️)
+- **Top-right:** круглый avatar / profile orb → grouped menu (N3): Профиль → `/settings`, Безопасность, Выйти
 - Breadcrumbs на внутренних страницах
+- Sheet menu (mobile) — prefs и profile переносятся в sheet/footer
+- Sync progress — floating panel (M7), не блокирует UI
 
-**Критерий:** navigation работает, protected redirect на `/login`
+**Критерий:** navigation работает, protected redirect на `/login`, имя из профиля видно в orb-menu
 
 ---
 
@@ -401,14 +467,15 @@ useSyncJob(id)      // query with refetchInterval when running
 
 ---
 
-## Фаза F7 — Settings
+## Фаза F7 — Settings (v3 sidebar nav)
 
-- Update name
-- Change password form
-- **Language preference (RU / EN)** — переключение локали
-- Danger zone: disconnect integration
+- `/settings` — default секция **Профиль** (имя, email readonly)
+- `/settings/security` — смена пароля
+- `/settings/language` — RU/EN (дублирует sidebar toggle, один state)
+- `/settings/danger` — disconnect amoCRM
+- Sidebar nav внутри страницы (L3)
 
-**Критерий:** profile update reflects in header
+**Критерий:** profile update reflects in profile orb-menu
 
 ---
 
@@ -444,22 +511,6 @@ useSyncJob(id)      // query with refetchInterval when running
 
 ---
 
-## Порядок реализации (чеклист)
-
-```
-[ ] F0: Vite + Tailwind + shadcn scaffold
-[ ] F1: Router + AppShell layout
-[ ] F2: Auth pages + API client + guards
-[ ] F3: Dashboard
-[ ] F4: Deals list + detail
-[ ] F5: Integrations + amoCRM setup
-[ ] F6: Sync trigger + progress
-[ ] F7: Settings
-[ ] F8: Polish + deploy
-```
-
----
-
 ## Оценка времени
 
 | Фаза | Оценка |
@@ -483,14 +534,4 @@ useSyncJob(id)      // query with refetchInterval when running
 | amoCRM setup | `/integrations/amocrm/*` | 5 |
 | Sync button | `/sync/amocrm/leads` | 7 |
 
----
-
-## Handoff checklist (backend → frontend)
-
-Перед стартом F0 убедиться:
-
-- [ ] Swagger доступен и актуален
-- [ ] CORS разрешает `http://localhost:5173`
-- [ ] `.env.example` содержит все переменные
-- [ ] Mock mode работает без реального amoCRM
-- [ ] `route-map.md` совпадает с реальными endpoints
+> Полный чеклист прогресса — в начале документа (секция **Чеклист прогресса**).

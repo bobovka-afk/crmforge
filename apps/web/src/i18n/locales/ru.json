@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "deals": "Сделки",
+    "integrations": "Интеграции",
+    "settings": "Настройки"
+  },
+  "auth": {
+    "login": "Войти",
+    "register": "Создать аккаунт",
+    "email": "Email",
+    "password": "Пароль",
+    "name": "Имя",
+    "google": "Войти через Google",
+    "or": "или",
+    "noAccount": "Нет аккаунта?",
+    "hasAccount": "Уже есть аккаунт?",
+    "checkEmailTitle": "Проверьте почту",
+    "checkEmailDesc": "Мы отправили ссылку подтверждения на",
+    "resend": "Отправить письмо снова",
+    "resendSuccess": "Письмо отправлено",
+    "verificationEmailSent": "Аккаунт создан. Письмо для подтверждения отправлено — можно подтвердить позже.",
+    "verifyLaterBanner": "Email не подтверждён. Можно продолжить работу и подтвердить позже в",
+    "verifyLaterLink": "настройках профиля",
+    "verifyTitle": "Подтверждаем email",
+    "verifyDesc": "Проверяем token из ссылки…",
+    "verifySuccess": "Email подтверждён"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Обзор сделок и статус интеграции amoCRM",
+    "sync": "Синхронизировать",
+    "recentDeals": "Последние сделки",
+    "allDeals": "Все сделки",
+    "integrations": "Интеграции",
+    "emptyIntegration": "Интеграция не подключена",
+    "emptyIntegrationDesc": "Подключите amoCRM для импорта сделок",
+    "connect": "Connect amoCRM",
+    "statsTotal": "Всего сделок",
+    "statsWon": "Выиграно",
+    "statsOpen": "В работе",
+    "statsPipeline": "Pipeline"
+  },
+  "deals": {
+    "title": "Сделки",
+    "subtitle": "сделок · синхронизировано из amoCRM",
+    "search": "Поиск сделок…",
+    "status": "Статус",
+    "allStatuses": "Все статусы",
+    "contact": "Контакт",
+    "amount": "Сумма",
+    "syncedAt": "Синхр.",
+    "emptyTitle": "Нет сделок",
+    "emptyDesc": "Подключите amoCRM и синхронизируйте лиды — они появятся здесь",
+    "back": "Все сделки"
+  },
+  "integrations": {
+    "title": "Интеграции",
+    "subtitle": "Подключите CRM для синхронизации сделок",
+    "configure": "Настроить",
+    "soon": "Скоро",
+    "connected": "Подключено"
+  },
+  "settings": {
+    "title": "Настройки",
+    "subtitle": "Профиль, безопасность и язык интерфейса",
+    "profile": "Профиль",
+    "security": "Безопасность",
+    "language": "Язык",
+    "danger": "Опасная зона",
+    "save": "Сохранить",
+    "updatePassword": "Обновить пароль",
+    "currentPassword": "Текущий пароль",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтверждение",
+    "disconnectAmo": "Отключить amoCRM",
+    "dangerDesc": "Отключение amoCRM удалит токены интеграции. Сделки в CRMForge останутся.",
+    "emailVerification": "Подтверждение email",
+    "emailVerified": "Email подтверждён.",
+    "emailNotVerified": "Email не подтверждён. Нажмите кнопку ниже, чтобы отправить письмо со ссылкой."
+  },
+  "profileMenu": {
+    "account": "Аккаунт",
+    "profile": "Профиль",
+    "security": "Безопасность",
+    "logout": "Выйти"
+  },
+  "sync": {
+    "title": "Синхронизация amoCRM",
+    "hint": "Работа в приложении не блокируется",
+    "done": "Синхронизация завершена",
+    "doneDesc": "Импортировано новых сделок из amoCRM",
+    "viewDeals": "Открыть сделки"
+  },
+  "common": {
+    "loading": "Загрузка…",
+    "save": "Сохранить",
+    "cancel": "Отмена"
+  },
+  "notFound": {
+    "title": "Упс!",
+    "desc": "Такой страницы нет в CRMForge",
+    "home": "На dashboard"
+  }
+}
